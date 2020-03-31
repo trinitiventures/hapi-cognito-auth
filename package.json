@@ -1,0 +1,59 @@
+{
+  "name": "@founderos/hapi-cognito-auth",
+  "version": "0.1.0",
+  "description": "A hapi plugin which adds Cognito authentication to your server",
+  "author": "Andre Gallo <andre@triniti.net> (https://www.triniti.net)",
+  "license": "UNLICENSED",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "lab",
+    "test:debug": "lab --inspect --inspect-brk",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/founderos/hapi-cognito-auth.git"
+  },
+  "keywords": [
+    "hapi",
+    "auth",
+    "jwt",
+    "cognito"
+  ],
+  "dependencies": {
+    "@hapi/boom": "9.1.0",
+    "@hapi/hoek": "9.0.4",
+    "@hapi/wreck": "17.0.0",
+    "cookie": "0.4.0",
+    "jsonwebtoken": "8.5.1",
+    "jwk-to-pem": "2.0.3"
+  },
+  "devDependencies": {
+    "@hapi/code": "8.x.x",
+    "@hapi/lab": "22.x.x",
+    "eslint": "6.x.x",
+    "eslint-config-hapi": "12.x.x",
+    "eslint-plugin-hapi": "4.x.x",
+    "husky": "4.x.x",
+    "lint-staged": "10.x.x"
+  },
+  "files": [
+    "lib/",
+    "package.json"
+  ],
+  "lint-staged": {
+    "*.js": [
+      "eslint . --fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}

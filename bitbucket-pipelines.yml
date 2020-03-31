@@ -1,0 +1,28 @@
+image: node:12.15
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: Install & Test
+          caches:
+            - node
+          script:
+            - mv .npmrc_config .npmrc
+            - npm ci
+            - npm test # lab does linting, coverage and test in one command
+    master:
+      - step:
+          name: Install & Test
+          caches:
+            - node
+          script:
+            - mv .npmrc_config .npmrc
+            - npm ci
+            - npm test
+      - step:
+          name: Publish to NPM
+          deployment: production
+          script:
+            - mv .npmrc_config .npmrc
+            - npm publish

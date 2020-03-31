@@ -1,0 +1,17 @@
+{
+  "extends": "eslint-config-hapi",
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "ecmaFeatures": {
+      "impliedStrict": true
+    }
+  },
+  "rules": {
+    "indent": ["error", 2],
+    "no-console": "error",
+    "semi": ["error", "never"],
+    "strict": ["error", "never"],
+    "hapi/hapi-scope-start": "off",
+    "brace-style": [1, "1tbs", { "allowSingleLine": true }]
+  }
+}
