@@ -1,8 +1,8 @@
 image: node:12.15
 
 pipelines:
-  branches:
-    develop:
+  pull-requests:
+    '**':
       - step:
           name: Install & Test
           caches:
@@ -10,8 +10,9 @@ pipelines:
           script:
             - mv .npmrc_config .npmrc
             - npm ci
-            - npm test # lab does linting, coverage and test in one command
-    master:
+            - npm test
+  tags:
+    '**':
       - step:
           name: Install & Test
           caches:
@@ -26,3 +27,13 @@ pipelines:
           script:
             - mv .npmrc_config .npmrc
             - npm publish
+  branches:
+    master:
+      - step:
+          name: Install & Test
+          caches:
+            - node
+          script:
+            - mv .npmrc_config .npmrc
+            - npm ci
+            - npm test
