@@ -10,6 +10,13 @@ const { expect } = Code
 const server = {
   log: console.log
 }
+const getRequest = (token) => ({
+  log: console.log,
+  headers: {
+    authorization: `Bearer ${token}`
+  }
+})
+
 const h = {
   authenticated: (data) => {
     return data
@@ -17,6 +24,20 @@ const h = {
   unauthenticated: (error) => {
     throw error
   }
+}
+const wreckMock = {
+  get: async () => {
+    return await Promise.resolve({
+      payload: {
+        keys: JwksMock.keys
+      }
+    })
+  }
+}
+const tokenOptions = {
+  aud: 'my_audience',
+  iss:  'https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_some_random_id',
+  use: 'id'
 }
 
 describe('Cognito Auth Scheme', () => {
@@ -52,11 +73,7 @@ describe('Cognito Auth Scheme', () => {
 
   it('errors out if no UserPool Id is passed in', () => {
     const options = {
-      token: {
-        aud: 'audience',
-        iss: 'issuer',
-        use: 'id'
-      }
+      token: tokenOptions
     }
     const s = CognitoScheme()
 
@@ -65,12 +82,8 @@ describe('Cognito Auth Scheme', () => {
 
   it('errors out if no validate function is passed in', () => {
     const options = {
-      token: {
-        aud: 'audience',
-        iss: 'issuer',
-        use: 'id'
-      },
-      userPoolId: 'ap-southeast-2_jd848'
+      token: tokenOptions,
+      userPoolId: 'some_random_id'
     }
     const s = CognitoScheme()
 
@@ -79,12 +92,8 @@ describe('Cognito Auth Scheme', () => {
 
   it('errors out if validate function is not async', () => {
     const options = {
-      token: {
-        aud: 'audience',
-        iss: 'issuer',
-        use: 'id'
-      },
-      userPoolId: 'ap-southeast-2_jd848',
+      token: tokenOptions,
+      userPoolId: 'some_random_id',
       validate: () => {}
     }
     const s = CognitoScheme()
@@ -94,27 +103,14 @@ describe('Cognito Auth Scheme', () => {
 
   it('errors out if there is no token in request', () => {
     const options = {
-      token: {
-        aud: 'audience',
-        iss: 'issuer',
-        use: 'id'
-      },
-      userPoolId: 'ap-southeast-2_jd848',
+      token: tokenOptions,
+      userPoolId: 'some_random_id',
       validate: async () => { return await Promise.resolve() },
-      wreck: {
-        get: async () => {
-          return await Promise.resolve({
-            payload: {
-              keys: JwksMock.keys
-            }
-          })
-        }
-      }
+      wreck: wreckMock
     }
     const request = {
-      log: console.log,
       headers: {
-        x: 'Bearer fjfjsidf'
+        x: 'something'
       }
     }
     const s = CognitoScheme()
@@ -122,13 +118,56 @@ describe('Cognito Auth Scheme', () => {
     expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
   })
 
+  it('errors out if token is in wrong format', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'some_random_id',
+      validate: async () => { return await Promise.resolve() },
+      wreck: wreckMock
+    }
+    const request = getRequest('111.2222')
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
+  it('errors out if validate function fails to return', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: false })
+      },
+      wreck: wreckMock
+    }
+    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
+  it('errors out if there is token use mismatch', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, options.token.iss, options.token.aud)
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
   it('returns credentials', async () => {
     const options = {
-      token: {
-        aud: 'my_audience',
-        iss:  'https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_some_random_id',
-        use: 'id'
-      },
+      token: tokenOptions,
       userPoolId: 'ap-southeast-2_some_random_id',
       validate: async (decoded) => {
         return await Promise.resolve({
@@ -136,27 +175,34 @@ describe('Cognito Auth Scheme', () => {
           credentials: { id: decoded.payload.sub, name: decoded.payload.given_name }
         })
       },
-      wreck: {
-        get: async () => {
-          return await Promise.resolve({
-            payload: {
-              keys: JwksMock.keys
-            }
-          })
-        }
-      }
+      wreck: wreckMock
     }
     const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
 
-    const request = {
-      log: console.log,
-      headers: {
-        authorization: `Bearer ${token}`
-      }
-    }
+    const request = getRequest(token)
     const s = CognitoScheme()
 
     const authentication = await s.scheme(server, options).authenticate(request, h)
     expect(authentication).to.equal({ credentials: { id: 1, name: 'John' } })
+  })
+
+  it('returns original token if validate function does not return credential', async () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    const authentication = await s.scheme(server, options).authenticate(request, h)
+    expect(authentication.credentials.sub).to.equal(1)
+    expect(authentication.credentials.given_name).to.equal('John')
+    expect(authentication.credentials.token_use).to.equal('id')
   })
 })
