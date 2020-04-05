@@ -2,7 +2,7 @@
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
 const CognitoScheme = require('../../lib/auth/schemes/cognito')
-const { GetNewToken } = require('../utils')
+const { GetNewToken, JwksMock } = require('../utils')
 
 const { describe, it } = exports.lab = Lab.script()
 const { expect } = Code
@@ -100,7 +100,16 @@ describe('Cognito Auth Scheme', () => {
         use: 'id'
       },
       userPoolId: 'ap-southeast-2_jd848',
-      validate: async () => { return await Promise.resolve() }
+      validate: async () => { return await Promise.resolve() },
+      wreck: {
+        get: async () => {
+          return await Promise.resolve({
+            payload: {
+              keys: JwksMock.keys
+            }
+          })
+        }
+      }
     }
     const request = {
       log: console.log,
@@ -126,9 +135,18 @@ describe('Cognito Auth Scheme', () => {
           isValid: true,
           credentials: { id: decoded.payload.sub, name: decoded.payload.given_name }
         })
+      },
+      wreck: {
+        get: async () => {
+          return await Promise.resolve({
+            payload: {
+              keys: JwksMock.keys
+            }
+          })
+        }
       }
     }
-    const token = GetNewToken({ sub: 1, given_name: 'John' }, options.token.iss, options.token.aud)
+    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
 
     const request = {
       log: console.log,
