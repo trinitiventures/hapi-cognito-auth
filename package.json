@@ -26,9 +26,10 @@
     "cognito"
   ],
   "dependencies": {
-    "@hapi/boom": "9.1.0",
-    "@hapi/hoek": "9.1.0",
-    "@hapi/wreck": "17.0.0",
+    "@hapi/boom": "9.1.1",
+    "@hapi/hoek": "9.1.1",
+    "@hapi/wreck": "17.1.0",
+    "@hapipal/haute-couture": "4.0.0",
     "cookie": "0.4.1",
     "jsonwebtoken": "8.5.1",
     "jwk-to-pem": "2.0.4"
@@ -36,7 +37,7 @@
   "devDependencies": {
     "@hapi/code": "8.x.x",
     "@hapi/lab": "24.x.x",
-    "eslint": "6.x.x",
+    "eslint": "7.x.x",
     "eslint-config-hapi": "12.x.x",
     "eslint-plugin-hapi": "4.x.x",
     "husky": "4.x.x",

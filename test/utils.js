@@ -1,5 +1,5 @@
 const Jwt = require('jsonwebtoken')
-const { GetPrivatePem } = require('../lib/auth/helpers/token')
+const { getPrivatePem } = require('../lib/auth/helpers/token')
 
 const kid = 'kjd83hdnd93jdjdnf839='
 const mockKeys = {
@@ -22,11 +22,11 @@ const mockKeys = {
 }
 
 const getNewToken = (payload, iss, aud) => {
-  const pem = GetPrivatePem(mockKeys.keys, { private: true })
+  const pem = getPrivatePem(mockKeys.keys, { private: true })
   return Jwt.sign(payload, pem[kid], { audience: aud, issuer: iss, algorithm: 'RS256', keyid: kid })
 }
 
 module.exports = {
-  GetNewToken: getNewToken,
-  JwksMock: mockKeys
+  getNewToken,
+  mockKeys
 }

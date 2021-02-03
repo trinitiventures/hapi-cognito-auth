@@ -1,16 +1,17 @@
-/* eslint-disable no-console */
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
 const CognitoScheme = require('../../lib/auth/schemes/cognito')
-const { GetNewToken, JwksMock } = require('../utils')
+const { getNewToken, mockKeys } = require('../utils')
 
 const { describe, it } = exports.lab = Lab.script()
 const { expect } = Code
 
 const server = {
+  // eslint-disable-next-line no-console
   log: console.log
 }
 const getRequest = (token) => ({
+  // eslint-disable-next-line no-console
   log: console.log,
   headers: {
     authorization: `Bearer ${token}`
@@ -29,7 +30,7 @@ const wreckMock = {
   get: async () => {
     return await Promise.resolve({
       payload: {
-        keys: JwksMock.keys
+        keys: mockKeys.keys
       }
     })
   }
@@ -140,7 +141,7 @@ describe('Cognito Auth Scheme', () => {
       },
       wreck: wreckMock
     }
-    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
 
     const request = getRequest(token)
     const s = CognitoScheme()
@@ -157,7 +158,7 @@ describe('Cognito Auth Scheme', () => {
       },
       wreck: wreckMock
     }
-    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, options.token.iss, options.token.aud)
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, options.token.iss, options.token.aud)
 
     const request = getRequest(token)
     const s = CognitoScheme()
@@ -177,7 +178,7 @@ describe('Cognito Auth Scheme', () => {
       },
       wreck: wreckMock
     }
-    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
 
     const request = getRequest(token)
     const s = CognitoScheme()
@@ -195,7 +196,7 @@ describe('Cognito Auth Scheme', () => {
       },
       wreck: wreckMock
     }
-    const token = GetNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'id' }, options.token.iss, options.token.aud)
 
     const request = getRequest(token)
     const s = CognitoScheme()
