@@ -1,7 +1,7 @@
 module.exports = {
     assert: '@hapi/code',
     coverage: true,
-    threshold: 93,
+    threshold: 95,
     lint: true,
     timeout: 5000,
     verbose: process.env.CI ? false : true,

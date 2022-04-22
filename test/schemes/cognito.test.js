@@ -166,6 +166,74 @@ describe('Cognito Auth Scheme', () => {
     expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
   })
 
+  it('errors out if cannot decode token due to wrong issuer', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, 'random_issuer', options.token.aud)
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
+  it('errors out if cannot decode token due to wrong audience', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+    const token = getNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, options.token.iss, 'wrong_aud')
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
+  it('errors out if token is tampered with', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+    let token = getNewToken({ sub: 1, given_name: 'John', token_use: 'access' }, options.token.iss, 'wrong_aud')
+    token += 'tampered'
+
+    const request = getRequest(token)
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
+  it('errors out if cannot decode token', () => {
+    const options = {
+      token: tokenOptions,
+      userPoolId: 'ap-southeast-2_some_random_id',
+      validate: async () => {
+        return await Promise.resolve({ isValid: true })
+      },
+      wreck: wreckMock
+    }
+
+    const request = getRequest('e.e.e')
+    const s = CognitoScheme()
+
+    expect(s.scheme(server, options).authenticate(request, h)).to.reject('Unauthorized')
+  })
+
   it('returns credentials', async () => {
     const options = {
       token: tokenOptions,
