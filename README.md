@@ -1,6 +1,7 @@
 # hapi-cognito-auth
 
 [![Continuous Integration](https://github.com/trinitiventures/hapi-cognito-auth/actions/workflows/ci.yml/badge.svg)](https://github.com/trinitiventures/hapi-cognito-auth/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This package adds a [Cognito](https://aws.amazon.com/cognito/) auth scheme to a hapi server
 
