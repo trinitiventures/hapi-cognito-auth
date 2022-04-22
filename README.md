@@ -1,6 +1,9 @@
 # hapi-cognito-auth
 
+[![Continuous Integration](https://github.com/trinitiventures/hapi-cognito-auth/actions/workflows/ci.yml/badge.svg)](https://github.com/trinitiventures/hapi-cognito-auth/actions/workflows/ci.yml)
+
 This package adds a [Cognito](https://aws.amazon.com/cognito/) auth scheme to a hapi server
+
 ## Installation
 ```console
 npm i @trinitiventures/hapi-cognito-auth
