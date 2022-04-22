@@ -1,6 +1,6 @@
 # hapi-cognito-auth
 
-This package adds a [Cognito](https://aws.amazon.com/cognito/). auth scheme to a hapi server
+This package adds a [Cognito](https://aws.amazon.com/cognito/) auth scheme to a hapi server
 ## Installation
 ```console
 npm i @trinitiventures/hapi-cognito-auth
