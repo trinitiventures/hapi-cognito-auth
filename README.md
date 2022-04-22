@@ -1,26 +1,39 @@
 # hapi-cognito-auth
 
-This package adds a cognito auth scheme to a hapi server
-
-## How to get up and running
-Before this repo can be cloned, make sure that:
-1. The latest LTS version of `node` is installed
-2. The latest version of `npm` is installed
-3. The latest version of `git` is installed
-
-Once these have been installed, you may clone the repo 🤓
-
-## Install dependencies
+This package adds a [Cognito](https://aws.amazon.com/cognito/). auth scheme to a hapi server
+## Installation
 ```console
-npm run i
+npm i @trinitiventures/hapi-cognito-auth
 ```
 
-## Running tests
-```console
-npm test
-```
-
-## Running linter
-```console
-npm run lint
+## Configuration
+Below is an example of how to configure this plugin with [Confidence](https://github.com/hapipal/confidence) (pun intended ;)
+```javascript
+module.exports = new Confidence.Store({
+  server: {
+    port: {
+      $env: 'PORT',
+      $coerce: 'number',
+      $default: 3000
+    },
+  register: {
+    plugins: [
+      {
+        plugin: '@trinitiventures/hapi-cognito-auth',
+        options: {
+          token: {
+          aud: { $env: 'COGNITO_IDP_AUDIENCE' },
+          iss: { $env: 'COGNITO_IDP_ISSUER' },
+          use: 'id' //only accept idTokens
+          },
+          userPoolId: { $env: 'COGNITO_USER_POOL_ID' },
+        }
+      },
+      {
+        plugin: '../lib',
+        options: {}
+      }
+    ]
+  }
+})
 ```
