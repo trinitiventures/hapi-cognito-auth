@@ -23,19 +23,19 @@ module.exports = new Confidence.Store({
   register: {
     plugins: [
       {
-        plugin: '@trinitiventures/hapi-cognito-auth',
-        options: {
-          token: {
-          aud: { $env: 'COGNITO_IDP_AUDIENCE' },
-          iss: { $env: 'COGNITO_IDP_ISSUER' },
-          use: 'id' //only accept idTokens
-          },
-          userPoolId: { $env: 'COGNITO_USER_POOL_ID' },
-        }
+        plugin: '@trinitiventures/hapi-cognito-auth'
       },
       {
-        plugin: '../lib',
-        options: {}
+        plugin: '../lib', // Main plugin
+        options: {
+          token: {
+            aud: { $env: 'COGNITO_IDP_AUDIENCE' },
+            iss: { $env: 'COGNITO_IDP_ISSUER' },
+            use: 'id' //only accept idTokens
+          },
+          region: { $env: 'COGNITO_REGION' },
+          userPoolId: { $env: 'COGNITO_USER_POOL_ID' }
+        }
       }
     ]
   }
