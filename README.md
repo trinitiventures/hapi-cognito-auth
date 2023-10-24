@@ -34,7 +34,8 @@ module.exports = new Confidence.Store({
             use: 'id' //only accept idTokens
           },
           region: { $env: 'COGNITO_REGION' },
-          userPoolId: { $env: 'COGNITO_USER_POOL_ID' }
+          userPoolId: { $env: 'COGNITO_USER_POOL_ID' },
+          jwtSecretKey: { $env: 'JWT_SECRET_KEY' }
         }
       }
     ]
