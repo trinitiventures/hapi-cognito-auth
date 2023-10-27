@@ -1,6 +1,6 @@
 {
   "name": "@trinitiventures/hapi-cognito-auth",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "A hapi plugin which adds Cognito authentication to your server",
   "author": "Andre Gallo <andre@triniti.net> (https://www.triniti.net)",
   "license": "MIT",
